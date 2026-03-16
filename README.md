@@ -57,3 +57,5 @@ Modify `ascii_cam/config.py` to change settings:
 - `ASPECT_RATIO_CORRECTION`: Vertical correction factor.
 - `ENABLE_EDGES`: Toggle Canny edge detection.
 - `INVERT_EDGES`: Choose whether edges are drawn with dense or light characters.
+- `HIGHLIGHT`: Toggle inverted/highlighted character mode.
+- `TTY_MODE`: Toggle TTY-friendly 16-color mode.
