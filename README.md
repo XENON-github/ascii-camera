@@ -59,3 +59,10 @@ Modify `ascii_cam/config.py` to change settings:
 - `INVERT_EDGES`: Choose whether edges are drawn with dense or light characters.
 - `HIGHLIGHT`: Toggle inverted/highlighted character mode.
 - `TTY_MODE`: Toggle TTY-friendly 16-color mode.
+
+
+##NOTE
+
+This project has not been tested in different terminals yet (especially in windows, i havent done that), your terminal may not view it as properly. In case any issues come up, open them.
+
+Also you may need to resize your terminal for it to work
