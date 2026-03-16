@@ -15,7 +15,20 @@ from .config import (
     CONTRAST
 )
 
-def frame_to_ascii(frame: np.ndarray, width: int, use_color: bool = True) -> str:
+def rgb_to_ansi16(r: int, g: int, b: int) -> int:
+    """Map RGB to nearest ANSI 16 color code (30-37, 90-97)."""
+    # Bit flags: Red=1, Green=2, Blue=4
+    r_bit = 1 if r > 127 else 0
+    g_bit = 2 if g > 127 else 0
+    b_bit = 4 if b > 127 else 0
+    color_idx = r_bit | g_bit | b_bit
+    
+    # If any component is quite bright, use the 'bright' ANSI range (90-97)
+    if max(r, g, b) > 180:
+        return 90 + color_idx
+    return 30 + color_idx
+
+def frame_to_ascii(frame: np.ndarray, width: int, use_color: bool = True, highlight: bool = False, use_tty: bool = False) -> str:
     if frame is None:
         return ""
 
@@ -57,29 +70,46 @@ def frame_to_ascii(frame: np.ndarray, width: int, use_color: bool = True) -> str
     
     ascii_chars_list = list(ASCII_CHARS)
     
+    highlight_code = "\033[7m" if highlight else ""
+    reset_highlight = "\033[27m" if highlight else ""
+
     if not use_color:
         ascii_chars_array = np.array(ascii_chars_list)
         ascii_frame_array = ascii_chars_array[ascii_indices]
-        ascii_rows = ["".join(row) for row in ascii_frame_array]
+        if highlight:
+            ascii_rows = [highlight_code + "".join(row) + reset_highlight for row in ascii_frame_array]
+        else:
+            ascii_rows = ["".join(row) for row in ascii_frame_array]
         return "\n".join(ascii_rows)
     else:
         rgb_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
         
         output = []
-        last_r, last_g, last_b = -1, -1, -1
+        last_color_code = ""
         
         for y in range(height):
             line = []
+            if highlight:
+                line.append(highlight_code)
+            
             for x in range(width):
                 idx = ascii_indices[y, x]
                 char = ascii_chars_list[idx]
                 r, g, b = rgb_frame[y, x]
                 
-                if r != last_r or g != last_g or b != last_b:
-                    line.append(f"\033[38;2;{r};{g};{b}m{char}")
-                    last_r, last_g, last_b = r, g, b
+                if use_tty:
+                    color_code = f"\033[{rgb_to_ansi16(r, g, b)}m"
+                else:
+                    color_code = f"\033[38;2;{r};{g};{b}m"
+                
+                if color_code != last_color_code:
+                    line.append(f"{color_code}{char}")
+                    last_color_code = color_code
                 else:
                     line.append(char)
+            
+            if highlight:
+                line.append(reset_highlight)
             
             output.append("".join(line))
         

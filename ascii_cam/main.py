@@ -6,7 +6,7 @@ import argparse
 from typing import NoReturn
 from .camera import Camera
 from .ascii_converter import frame_to_ascii
-from .config import FRAME_WIDTH, TARGET_FPS
+from .config import FRAME_WIDTH, TARGET_FPS, HIGHLIGHT, TTY_MODE
 
 def hide_cursor() -> None:
     sys.stdout.write("\033[?25l")
@@ -26,6 +26,9 @@ def main() -> None:
     parser.add_argument("--width", type=int, default=FRAME_WIDTH, help=f"Width of the ASCII art (default: {FRAME_WIDTH})")
     parser.add_argument("--fps", type=int, default=TARGET_FPS, help=f"Target FPS (default: {TARGET_FPS})")
     parser.add_argument("--no-color", action="store_true", help="Disable color output (grayscale mode)")
+    parser.add_argument("--highlight", action="store_true", default=HIGHLIGHT, help=f"Enable highlight (inverted) mode (default: {HIGHLIGHT})")
+    parser.add_argument("--no-highlight", action="store_false", dest="highlight", help="Disable highlight mode")
+    parser.add_argument("--tty", action="store_true", default=TTY_MODE, help="Enable TTY-friendly 16-color mode")
     parser.add_argument("--index", type=int, default=None, help="Camera index (overrides config)")
     parser.add_argument("--video", type=str, default=None, help="Path to a video file to use instead of the camera")
     args = parser.parse_args()
@@ -56,7 +59,13 @@ def main() -> None:
                 time.sleep(0.1)
                 continue
 
-            ascii_frame = frame_to_ascii(frame, args.width, use_color=not args.no_color)
+            ascii_frame = frame_to_ascii(
+                frame, 
+                args.width, 
+                use_color=not args.no_color, 
+                highlight=args.highlight,
+                use_tty=args.tty
+            )
 
             sys.stdout.write("\033[H")
             sys.stdout.write(ascii_frame)
