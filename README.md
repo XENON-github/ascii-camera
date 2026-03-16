@@ -20,22 +20,24 @@ start.sh
 ## Installation and Execution
 
 ### 1. Clone the repo:
-```git clone https://github.com/XENON-github/ascii-camera```
+```bash
+git clone https://github.com/XENON-github/ascii-camera
+```
 
 ### 2. Run the application:
-
-```cd ascii-camera```
 
 The `start.sh` (Linux/macOS) or `start.bat` (Windows) script will automatically create a virtual environment and install dependencies.
 
 **Linux/macOS:**
 ```bash
+cd ascii-camera
 chmod +x start.sh
 ./start.sh
 ```
 
 **Windows:**
 ```cmd
+cd ascii-camera
 start.bat
 ```
 
