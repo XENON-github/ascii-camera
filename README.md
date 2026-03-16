@@ -61,7 +61,7 @@ Modify `ascii_cam/config.py` to change settings:
 - `TTY_MODE`: Toggle TTY-friendly 16-color mode.
 
 
-##NOTE
+## NOTE
 
 This project has not been tested in different terminals yet (especially in windows, i havent done that), your terminal may not view it as properly. In case any issues come up, open them.
 
